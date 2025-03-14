@@ -1,8 +1,9 @@
 import {makeProject} from '@motion-canvas/core';
 
-import example from './scenes/example?scene';
+import content from './scenes/content.tsx?scene';
 import logo from './scenes/logo?scene';
+import test from './scenes/test.tsx?scene';
 
 export default makeProject({
-  scenes: [logo, example],
+  scenes: [logo, test],
 });

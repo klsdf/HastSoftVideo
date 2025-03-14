@@ -1,8 +1,6 @@
 import { Circle, Img, Rect, Txt, makeScene2D } from '@motion-canvas/2d';
 import { createRef, all, map, chain, waitFor } from '@motion-canvas/core';
 
-
-
 /**
  * 给定一个文本，计算朗读这句话所需的时间
  */
@@ -16,7 +14,6 @@ function calculateReadingTime(text: string): number {
   
   for (let i = 0; i < text.length; i++) {
     const char = text[i];
-    
     // 处理括号
     if (char === '（' || char === '(') {
       inBrackets = true;
@@ -26,7 +23,6 @@ function calculateReadingTime(text: string): number {
       inBrackets = false;
       continue;
     }
-    
     // 在括号内的文字不计入时间
     if (inBrackets) {
       continue;
@@ -43,6 +39,14 @@ function calculateReadingTime(text: string): number {
   }
 
   return duration;
+}
+
+
+class VideoScript {
+  constructor(
+    public text: string,
+    public callback: () => void
+  ) {}
 }
 
 
@@ -64,6 +68,35 @@ function* textAnimation(text: Txt, texts: string[]) {
 }
 
 export default makeScene2D(function* (view) {
+
+
+  const videoScript = [
+    new VideoScript('你是否擅长某一个领域（程序，美术），但是你没有办法一个人cover项目', () => {
+      // console.log('第一个视频脚本');
+      const rect1 = createRef<Rect>();
+      view.add(
+        <Rect
+          ref={rect1}
+          width={200}
+          height={200}  
+          fill={'#FF6B6B'}
+          position={[-250, view.height()]}
+          radius={20}
+        />
+      );
+      
+      rect1().position.y(0, 1); 
+    }),
+    
+  ]
+
+
+
+
+
+
+
+
   const texts = ['你是否擅长某一个领域（程序，美术），但是你没有办法一个人cover项目',
     '你是否还在苦恼如何入门游戏开发。',
     '通过本课程，可以让0基础小白，入门全栈游戏开发。',
@@ -71,14 +104,45 @@ export default makeScene2D(function* (view) {
     "从小开始，制作独立游戏都是我的梦想。",
     "然而，最近的引擎和各种教程的兴起，给了我一种我上我也行的错觉。"];
 
-
-  const image = createRef<Img>();
-  // const rect = createRef<Rect>();
+  const rect1 = createRef<Rect>();
+  const rect2 = createRef<Rect>();
+  const rect3 = createRef<Rect>();
   const text = createRef<Txt>();
 
-  // view.add(<Circle ref={circle} size={320} fill={'lightseagreen'} />);
-  // view.add(<Img ref={image} src={'/imgs/test.jpg'} scale={0.09} position={[-500, 0]} />)
-  // view.add(<Rect ref={rect} size={320} fill={'rgba(0,0,0,0.5)'} />)
+  // 添加三个方块，初始位置在屏幕下方
+  view.add(
+    <Rect
+      ref={rect1}
+      width={200}
+      height={200}
+      fill={'#FF6B6B'}
+      position={[-250, view.height()]}
+      radius={20}
+    />
+  );
+  
+  view.add(
+    <Rect
+      ref={rect2}
+      width={200}
+      height={200}
+      fill={'#4ECDC4'}
+      position={[0, view.height()]}
+      radius={20}
+    />
+  );
+  
+  view.add(
+    <Rect
+      ref={rect3}
+      width={200}
+      height={200}
+      fill={'#45B7D1'}
+      position={[250, view.height()]}
+      radius={20}
+    />
+  );
+
   view.add(
     <Txt
       ref={text}
@@ -89,11 +153,17 @@ export default makeScene2D(function* (view) {
     />
   );
 
+
   yield* all(
-    // circle().scale(2, 2).to(1, 2).to(0.5, 1),
-    // image().scale(0.18, 2).to(0.09, 2),
-    // circle().fill('red', 1).to('blue', 2),
-    // rect().position.x(-100, 2),
+    chain(
+      rect1().position.y(0, 1),  // 第一个方块滑入
+      waitFor(5),
+      rect2().position.y(0, 1),  // 第二个方块滑入
+      waitFor(5),
+      rect3().position.y(0, 1),  // 第三个方块滑入
+    ),
     textAnimation(text(), texts)
-  );
+  )
+
+
 });
